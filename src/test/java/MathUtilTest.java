@@ -21,7 +21,7 @@ public class MathUtilTest {
 
     @Test
     public void highestCommonFactorMultipleValues() throws MathsUtilException {
-        int[] numbers = new int[]{24, 36};
+        int[] numbers = new int[]{24, 36, 48};
         assertEquals(Integer.valueOf(12), Integer.valueOf(MathUtil.highestCommonFactor(numbers)));
     }
 }
