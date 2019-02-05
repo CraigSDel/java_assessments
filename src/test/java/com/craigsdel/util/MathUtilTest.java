@@ -1,3 +1,6 @@
+package com.craigsdel.util;
+
+import com.craigsdel.exception.MathsUtilException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

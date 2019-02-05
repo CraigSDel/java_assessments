@@ -1,3 +1,7 @@
+package com.craigsdel.util;
+
+import com.craigsdel.exception.MathsUtilException;
+
 import java.math.BigInteger;
 
 /**

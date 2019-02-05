@@ -1,3 +1,5 @@
+package com.craigsdel.exception;
+
 /**
  * @author Craig Stroberg <strobergcd@gmail.com>
  */
