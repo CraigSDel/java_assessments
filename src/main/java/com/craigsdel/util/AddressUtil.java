@@ -12,9 +12,9 @@ import java.util.List;
 /**
  * @author Craig Stroberg <strobergcd@gmail.com>
  */
-public class AddressJsonUtil {
+public class AddressUtil {
 
-    private AddressJsonUtil() {
+    private AddressUtil() {
     }
 
     public static List<Address> fileToJson(final String filePath) throws URISyntaxException, IOException {
@@ -32,6 +32,30 @@ public class AddressJsonUtil {
         addresses.stream()
                 .filter(address -> type.getCode().equals(address.getType().getCode()) && type.getName().equalsIgnoreCase(address.getType().getName()))
                 .forEach(address -> System.out.println(prettyPrintAddress(address)));
+    }
+
+    public boolean isValid(Address address) {
+        try {
+            Integer.parseInt(address.getPostalCode());
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        if (address.getAddressLineDetail() == null) {
+            return false;
+        }
+        if (address.getAddressLineDetail().getLine1() == null && "".equals(address.getAddressLineDetail().getLine1()) ||
+                address.getAddressLineDetail().getLine2() == null && "".equals(address.getAddressLineDetail().getLine2())) {
+            return false;
+        }
+        if (address.getCountry() == null && address.getCountry().getCode() == null && "".equals(address.getCountry().getCode())
+                && address.getCountry().getName() == null && "".equals(address.getCountry().getName())) {
+            return false;
+        }
+        if ("ZA".equals(address.getCountry().getCode())) {
+            if(address.getProvinceOrState() == null && address.getProvinceOrState().getCode() == null && "".equals(address.getProvinceOrState().getName()))
+            return false;
+        }
+        return true;
     }
 
     public static String prettyPrintAddress(final Address address) {
