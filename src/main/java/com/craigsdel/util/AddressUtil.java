@@ -2,6 +2,7 @@ package com.craigsdel.util;
 
 import com.craigsdel.entity.Address;
 import com.craigsdel.entity.Type;
+import com.craigsdel.entity.ZAProvinces;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,28 +35,54 @@ public class AddressUtil {
                 .forEach(address -> System.out.println(prettyPrintAddress(address)));
     }
 
-    public boolean isValid(Address address) {
+    public static boolean isValid(Address address) {
+        boolean valid = false;
+        valid = isValidPostalCode(address);
+        valid = isValidAddressDetail(address);
+        valid = isValidCountry(address);
+        valid = isValidZAProvince(address);
+        return valid;
+    }
+
+    public static boolean isValidPostalCode(Address address) {
         try {
             Integer.parseInt(address.getPostalCode());
+            return true;
         } catch (NumberFormatException nfe) {
             return false;
         }
-        if (address.getAddressLineDetail() == null) {
-            return false;
+    }
+
+    public static boolean isValidZAProvince(Address address) {
+        if (address.getCountry() != null) {
+            if ("ZA".equals(address.getCountry().getCode())) {
+                if (address.getProvinceOrState().getCode() != null && !("".equals(address.getProvinceOrState().getName()))) {
+                    ZAProvinces.fromString(address.getProvinceOrState().getName());
+                    return true;
+                }
+            }
         }
-        if (address.getAddressLineDetail().getLine1() == null && "".equals(address.getAddressLineDetail().getLine1()) ||
-                address.getAddressLineDetail().getLine2() == null && "".equals(address.getAddressLineDetail().getLine2())) {
-            return false;
+        return false;
+    }
+
+    public static boolean isValidCountry(Address address) {
+        if (address.getCountry() != null) {
+            if (address.getCountry().getCode() != null && !("".equals(address.getCountry().getCode())) &&
+                    address.getCountry().getName() != null && !("".equals(address.getCountry().getName()))) {
+                return true;
+            }
         }
-        if (address.getCountry() == null && address.getCountry().getCode() == null && "".equals(address.getCountry().getCode())
-                && address.getCountry().getName() == null && "".equals(address.getCountry().getName())) {
-            return false;
+        return false;
+    }
+
+    public static boolean isValidAddressDetail(Address address) {
+        if (address.getAddressLineDetail() != null) {
+            if (address.getAddressLineDetail().getLine1() != null && !("".equals(address.getAddressLineDetail().getLine1())) ||
+                    address.getAddressLineDetail().getLine2() != null && !("".equals(address.getAddressLineDetail().getLine2()))) {
+                return true;
+            }
         }
-        if ("ZA".equals(address.getCountry().getCode())) {
-            if(address.getProvinceOrState() == null && address.getProvinceOrState().getCode() == null && "".equals(address.getProvinceOrState().getName()))
-            return false;
-        }
-        return true;
+        return false;
     }
 
     public static String prettyPrintAddress(final Address address) {
