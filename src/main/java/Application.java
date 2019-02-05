@@ -1,5 +1,6 @@
 import com.craigsdel.entity.Address;
 import com.craigsdel.entity.Type;
+import com.craigsdel.exception.AddressValidationException;
 import com.craigsdel.util.AddressUtil;
 import com.craigsdel.util.FileUtil;
 
@@ -12,12 +13,13 @@ import java.util.List;
  */
 public class Application {
 
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws URISyntaxException, IOException, AddressValidationException {
         final String fileContent = FileUtil.readFile("addresses[4681].json");
         final List<Address> addresses = AddressUtil.fileToJson("addresses[4681].json");
         System.out.println("Printing all the addresses\n");
         AddressUtil.prettyPrintAddress(addresses);
         System.out.println("\nPrinting with a filter\n");
         AddressUtil.prettyPrintAddress(addresses, new Type(2L, "Postal Address"));
+        AddressUtil.isValid(addresses);
     }
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,8 +44,10 @@ public class AddressUtilTest {
         assertEquals(false, AddressUtil.isValid(address));
         address.setProvinceOrState(new ProvinceOrState(5L, "Texas"));
         assertEquals(false, AddressUtil.isValid(address));
+        final List<Address> actual = new ArrayList<Address>();
+        actual.add(address);
+        assertEquals(true, AddressUtil.isValid(actual));
     }
-
 
     @Test(expected = AddressValidationException.class)
     public void validateAddressCountry() throws ParseException, AddressValidationException {

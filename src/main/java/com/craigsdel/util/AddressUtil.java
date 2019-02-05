@@ -36,6 +36,19 @@ public class AddressUtil {
                 .forEach(address -> System.out.println(prettyPrintAddress(address)));
     }
 
+    public static boolean isValid(List<Address> addresses) throws AddressValidationException {
+        boolean valid = false;
+        for (Address address : addresses) {
+            try {
+                valid = isValid(address);
+            } catch (AddressValidationException e) {
+                throw new AddressValidationException("Invalid Address - ID: " + address.getId()
+                        + " \n Reason: " + e.getMessage());
+            }
+        }
+        return valid;
+    }
+
     public static boolean isValid(Address address) throws AddressValidationException {
         try {
             if (isValidPostalCode(address) &&
@@ -45,7 +58,8 @@ public class AddressUtil {
                 return true;
             }
         } catch (AddressValidationException e) {
-            throw new AddressValidationException("Invalid Address - " + e.getMessage());
+            throw new AddressValidationException("Invalid Address - ID: " + address.getId()
+                    + " \n Reason: " + e.getMessage());
         }
         return false;
     }
