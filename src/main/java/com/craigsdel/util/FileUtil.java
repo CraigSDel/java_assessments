@@ -14,7 +14,7 @@ public class FileUtil {
     }
 
     public static String readFile(final String filePath) throws URISyntaxException {
-        final StringBuilder result = new StringBuilder("");
+        final StringBuilder result = new StringBuilder();
         //Get file from resources folder
         final ClassLoader classLoader = FileUtil.class.getClassLoader();
         final File file = new File(classLoader.getResource(filePath).toURI());

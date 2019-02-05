@@ -24,7 +24,7 @@ public class MathUtil {
                 }
             }
             return gcdResult.intValue();
-        }else if(numbers.length == 1){
+        } else if (numbers.length == 1) {
             return numbers[0];
         }
         throw new MathsUtilException("Error in your input");
