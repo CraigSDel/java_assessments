@@ -3,6 +3,7 @@ package com.craigsdel.util;
 import com.craigsdel.entity.Address;
 import com.craigsdel.entity.Type;
 import com.craigsdel.entity.ZAProvinces;
+import com.craigsdel.exception.AddressValidationException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,54 +36,61 @@ public class AddressUtil {
                 .forEach(address -> System.out.println(prettyPrintAddress(address)));
     }
 
-    public static boolean isValid(Address address) {
-        boolean valid = false;
-        valid = isValidPostalCode(address);
-        valid = isValidAddressDetail(address);
-        valid = isValidCountry(address);
-        valid = isValidZAProvince(address);
-        return valid;
-    }
-
-    public static boolean isValidPostalCode(Address address) {
+    public static boolean isValid(Address address) throws AddressValidationException {
         try {
-            Integer.parseInt(address.getPostalCode());
-            return true;
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-    }
-
-    public static boolean isValidZAProvince(Address address) {
-        if (address.getCountry() != null) {
-            if ("ZA".equals(address.getCountry().getCode())) {
-                if (address.getProvinceOrState().getCode() != null && !("".equals(address.getProvinceOrState().getName()))) {
-                    ZAProvinces.fromString(address.getProvinceOrState().getName());
-                    return true;
-                }
+            if (isValidPostalCode(address) &&
+                    isValidAddressDetail(address) &&
+                    isValidCountry(address) &&
+                    isValidZAProvince(address)) {
+                return true;
             }
+        } catch (AddressValidationException e) {
+            throw new AddressValidationException("Invalid Address - " + e.getMessage());
         }
         return false;
     }
 
-    public static boolean isValidCountry(Address address) {
+    public static boolean isValidPostalCode(Address address) throws AddressValidationException {
+        try {
+            Integer.parseInt(address.getPostalCode());
+            return true;
+        } catch (NumberFormatException nfe) {
+            throw new AddressValidationException("Invalid Postal Code");
+        }
+    }
+
+    public static boolean isValidZAProvince(Address address) throws AddressValidationException {
+        if (address.getCountry() != null) {
+            if ("ZA".equals(address.getCountry().getCode())) {
+                if (address.getProvinceOrState().getCode() != null && !("".equals(address.getProvinceOrState().getName()))) {
+                    final ZAProvinces zaProvinces = ZAProvinces.fromString(address.getProvinceOrState().getName());
+                    if (zaProvinces != null) {
+                        return true;
+                    }
+                }
+            }
+        }
+        throw new AddressValidationException("Invalid South African Province");
+    }
+
+    public static boolean isValidCountry(Address address) throws AddressValidationException {
         if (address.getCountry() != null) {
             if (address.getCountry().getCode() != null && !("".equals(address.getCountry().getCode())) &&
                     address.getCountry().getName() != null && !("".equals(address.getCountry().getName()))) {
                 return true;
             }
         }
-        return false;
+        throw new AddressValidationException("Invalid Country");
     }
 
-    public static boolean isValidAddressDetail(Address address) {
+    public static boolean isValidAddressDetail(Address address) throws AddressValidationException {
         if (address.getAddressLineDetail() != null) {
             if (address.getAddressLineDetail().getLine1() != null && !("".equals(address.getAddressLineDetail().getLine1())) ||
                     address.getAddressLineDetail().getLine2() != null && !("".equals(address.getAddressLineDetail().getLine2()))) {
                 return true;
             }
         }
-        return false;
+        throw new AddressValidationException("Invalid Address Detail. At least one address line detail is required");
     }
 
     public static String prettyPrintAddress(final Address address) {

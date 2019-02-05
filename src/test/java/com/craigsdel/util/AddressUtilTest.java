@@ -1,6 +1,7 @@
 package com.craigsdel.util;
 
 import com.craigsdel.entity.*;
+import com.craigsdel.exception.AddressValidationException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,8 +33,21 @@ public class AddressUtilTest {
         assertEquals(expected, AddressUtil.prettyPrintAddress(buildAddress()));
     }
 
-    @Test
-    public void validateAddressCountry() throws ParseException {
+    @Test(expected = AddressValidationException.class)
+    public void validateAddress() throws ParseException, AddressValidationException {
+        final Address address = buildAddress();
+        assertEquals(true, AddressUtil.isValid(address));
+        address.setCountry(null);
+        assertEquals(false, AddressUtil.isValid(address));
+        address.setAddressLineDetail(null);
+        assertEquals(false, AddressUtil.isValid(address));
+        address.setProvinceOrState(new ProvinceOrState(5L, "Texas"));
+        assertEquals(false, AddressUtil.isValid(address));
+    }
+
+
+    @Test(expected = AddressValidationException.class)
+    public void validateAddressCountry() throws ParseException, AddressValidationException {
         Address address = buildAddress();
         address.setCountry(null);
         assertEquals(false, AddressUtil.isValidCountry(address));
@@ -43,8 +57,8 @@ public class AddressUtilTest {
         assertEquals(true, AddressUtil.isValidCountry(address));
     }
 
-    @Test
-    public void validateAddressLineDetail() throws ParseException {
+    @Test(expected = AddressValidationException.class)
+    public void validateAddressLineDetail() throws ParseException, AddressValidationException {
         Address address = buildAddress();
         address.setAddressLineDetail(null);
         assertEquals(false, AddressUtil.isValidAddressDetail(address));
@@ -60,14 +74,16 @@ public class AddressUtilTest {
         assertEquals(true, AddressUtil.isValidAddressDetail(address));
     }
 
-    @Test
-    public void validateAddressZA() throws ParseException {
+    @Test(expected = AddressValidationException.class)
+    public void validateAddressZA() throws ParseException, AddressValidationException {
         Address address = buildAddress();
         assertEquals(true, AddressUtil.isValidZAProvince(address));
+        address.setProvinceOrState(new ProvinceOrState(5L, "Texas"));
+        assertEquals(false, AddressUtil.isValidZAProvince(address));
     }
 
     @Test
-    public void validateAddressPostalCode() throws ParseException {
+    public void validateAddressPostalCode() throws ParseException, AddressValidationException {
         Address address = buildAddress();
         assertEquals(true, AddressUtil.isValidPostalCode(address));
     }
